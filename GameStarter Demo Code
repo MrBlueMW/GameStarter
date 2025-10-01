@@ -1,4 +1,13 @@
--- Plugin Script (GameStarterPro.plugin)
+
+--[[ 
+GameStarter Pro Plugin
+Author: Joseph Smith
+Description:
+Roblox Studio plugin that generates common game systems with one-click setup.
+This snippet demonstrates the Spawn System generator with options for
+saving spawns, displaying numbers, and DataStore integration.
+]]
+
 local toolbar = plugin:CreateToolbar("GameStarter Pro")
 local button = toolbar:CreateButton("GameStarter", "Open GameStarter Pro", "")
 local rs = game:GetService("ReplicatedStorage")
@@ -98,7 +107,10 @@ createMainSystemMenu = function()
 	createButton("Add Loot Box System", createLootBoxSystemUI)
 end
 
--- Spawn System Function
+
+-- Spawn Chooser UI
+-- Lets developer configure number of spawns, saving, and display options.
+
 createSpawnSystemUI = function()
 	for _, child in ipairs(scrollingFrame:GetChildren()) do
 		if child:IsA("GuiObject") then
