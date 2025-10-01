@@ -1,0 +1,285 @@
+-- Plugin Script (GameStarterPro.plugin)
+local toolbar = plugin:CreateToolbar("GameStarter Pro")
+local button = toolbar:CreateButton("GameStarter", "Open GameStarter Pro", "")
+local rs = game:GetService("ReplicatedStorage")
+
+
+local widgetInfo = DockWidgetPluginGuiInfo.new(
+	Enum.InitialDockState.Left,
+	true,  -- Initial enabled
+	false, -- Override previous state
+	300,   -- Default width
+	400,   -- Default height
+	300,
+	400
+)
+
+local widget = plugin:CreateDockWidgetPluginGui("GameStarterProUI", widgetInfo)
+widget.Title = "GameStarter Pro"
+
+-- UI Setup
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0) -- will be adjusted automatically
+scrollingFrame.ScrollBarThickness = 6
+scrollingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollingFrame.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollingFrame.ClipsDescendants = true
+scrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
+scrollingFrame.Name = "MainScroller"
+scrollingFrame.Parent = widget
+
+
+local layout = Instance.new("UIListLayout")
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Padding = UDim.new(0, 10)
+layout.Parent = scrollingFrame
+
+local padding = Instance.new("UIPadding")
+padding.PaddingTop = UDim.new(0, 10)
+padding.PaddingBottom = UDim.new(0, 10)
+padding.PaddingLeft = UDim.new(0, 15)
+padding.PaddingRight = UDim.new(0, 15)
+padding.Parent = scrollingFrame
+
+
+local createMainSystemMenu
+local createDatastoreConfigUI
+local createMatchServerUI
+local createDialogueSystemUI
+local createSpawnSystemUI
+local createShopSystemUI
+local createLeaderboardSystemUI
+local createLootBoxSystemUI
+
+-- Reusable button creator (outside any other function)
+local function createButton(name, callback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -20, 0, 40)
+	btn.Text = name
+	btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Font = Enum.Font.SourceSansBold
+	btn.TextSize = 18
+	btn.AutoButtonColor = true
+	btn.Parent = scrollingFrame
+	btn.MouseButton1Click:Connect(callback)
+end
+
+-- Main system menu builder
+createMainSystemMenu = function()
+	-- Clear old UI
+	for _, child in ipairs(scrollingFrame:GetChildren()) do
+		if child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+
+	--createButton("Add Server System", function()
+	--	print("Server system will be added.")
+	--end)
+	
+	createButton("Add Match Server System", createMatchServerUI)
+
+	createButton("Add DataStore System", createDatastoreConfigUI)
+
+	createButton("Add Spawn Chooser", createSpawnSystemUI)
+
+	createButton("Add Dialogue System", createDialogueSystemUI)
+	
+	createButton("Add Shop System", createShopSystemUI)
+	
+	createButton("Add Leaderboard System", createLeaderboardSystemUI)
+	
+	createButton("Add Loot Box System", createLootBoxSystemUI)
+end
+
+-- Spawn System Function
+createSpawnSystemUI = function()
+	for _, child in ipairs(scrollingFrame:GetChildren()) do
+		if child:IsA("GuiObject") then
+			child:Destroy()
+		end
+	end
+
+	local function addLabel(text)
+		local label = Instance.new("TextLabel")
+		label.Text = text
+		label.TextColor3 = Color3.new(1, 1, 1)
+		label.BackgroundTransparency = 1
+		label.Size = UDim2.new(1, -20, 0, 25)
+		label.Parent = scrollingFrame
+	end
+
+	local function createToggle(text)
+		local button = Instance.new("TextButton")
+		button.Size = UDim2.new(1, -20, 0, 30)
+		button.Text = "[ ] " .. text
+		button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		button.TextColor3 = Color3.new(1, 1, 1)
+		button.Parent = scrollingFrame
+
+		local state = false
+		button.MouseButton1Click:Connect(function()
+			state = not state
+			button.Text = (state and "[✔] " or "[ ] ") .. text
+		end)
+
+		return function() return state end
+	end
+
+	addLabel("How many spawns do you want?")
+	local countBox = Instance.new("TextBox")
+	countBox.Size = UDim2.new(1, -20, 0, 30)
+	countBox.PlaceholderText = "Example: 6"
+	countBox.Text = ""
+	countBox.TextColor3 = Color3.new(1, 1, 1)
+	countBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	countBox.ClearTextOnFocus = false
+	countBox.Parent = scrollingFrame
+
+	local getSaveToggle = createToggle("Save Player Spawn")
+	local getShowToggle = createToggle("Display Spawn Number")
+
+	local generateBtn = Instance.new("TextButton")
+	generateBtn.Size = UDim2.new(1, -20, 0, 35)
+	generateBtn.Text = "🧱 Generate Spawns"
+	generateBtn.BackgroundColor3 = Color3.fromRGB(60, 150, 60)
+	generateBtn.TextColor3 = Color3.new(1, 1, 1)
+	generateBtn.Font = Enum.Font.SourceSansBold
+	generateBtn.TextSize = 18
+	generateBtn.Parent = scrollingFrame
+
+	generateBtn.MouseButton1Click:Connect(function()
+		local num = tonumber(countBox.Text)
+		if not num or num < 1 then
+			warn("Invalid spawn count")
+			return
+		end
+
+		local folder = Instance.new("Folder")
+		folder.Name = "SpawnPoints"
+		folder.Parent = workspace
+
+		for i = 1, num do
+			local part = Instance.new("Part")
+			part.Name = "Spawn_" .. i
+			part.Size = Vector3.new(4, 1, 4)
+			part.Anchored = true
+			part.CanCollide = false
+			part.Position = Vector3.new(i * 6, 3, 0)
+			part.Material = Enum.Material.Neon
+			part.BrickColor = BrickColor.new("Bright green")
+			part:SetAttribute("SpawnNumber", i)
+			part.Parent = folder
+
+			local spawnScript = Instance.new("Script")
+			spawnScript.Name = "SpawnHandler"
+			spawnScript.Source = [[
+local part = script.Parent
+local spawnNumber = part:GetAttribute("SpawnNumber") or 0
+local saveSpawn = ]] .. tostring(getSaveToggle()) .. [[
+local showLabel = ]] .. tostring(getShowToggle()) .. [[
+
+part.Touched:Connect(function(hit)
+	local player = game.Players:GetPlayerFromCharacter(hit.Parent)
+	if player then
+		local leaderstats = player:FindFirstChild("leaderstats") or Instance.new("Folder", player)
+		leaderstats.Name = "leaderstats"
+
+		local spawnVal = leaderstats:FindFirstChild("SavedSpawn") or Instance.new("IntValue", leaderstats)
+		spawnVal.Name = "SavedSpawn"
+		spawnVal.Value = spawnNumber
+
+		if saveSpawn then
+			local DataStoreService = game:GetService("DataStoreService")
+			local store = DataStoreService:GetDataStore("SpawnSave")
+			pcall(function()
+				store:SetAsync(player.UserId .. "_spawn", spawnNumber)
+			end)
+		end
+
+		if showLabel then
+			local gui = Instance.new("BillboardGui")
+			gui.Size = UDim2.new(0, 200, 0, 50)
+			gui.StudsOffset = Vector3.new(0, 3, 0)
+			gui.AlwaysOnTop = true
+			gui.Name = "SpawnDisplay"
+
+			local text = Instance.new("TextLabel")
+			text.Size = UDim2.new(1, 0, 1, 0)
+			text.TextScaled = true
+			text.Text = "Spawn #" .. spawnNumber
+			text.BackgroundTransparency = 1
+			text.TextColor3 = Color3.new(1, 1, 0)
+			text.Parent = gui
+
+			gui.Parent = player.Character:FindFirstChild("Head") or player.Character:FindFirstChildWhichIsA("BasePart")
+			delay(3, function() gui:Destroy() end)
+		end
+	end
+end)
+]]
+			spawnScript.Parent = part
+		end
+
+		if getSaveToggle() then
+			local sss = game:GetService("ServerScriptService")
+			local existing = sss:FindFirstChild("SpawnDataHandler")
+			if existing then existing:Destroy() end
+
+			local serverScript = Instance.new("Script")
+			serverScript.Name = "SpawnDataHandler"
+			serverScript.Source = [[
+local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
+local store = DataStoreService:GetDataStore("SpawnSave")
+
+Players.PlayerAdded:Connect(function(player)
+	local leaderstats = Instance.new("Folder", player)
+	leaderstats.Name = "leaderstats"
+
+	local savedSpawn = Instance.new("IntValue", leaderstats)
+	savedSpawn.Name = "SavedSpawn"
+	savedSpawn.Value = 1
+
+	local success, value = pcall(function()
+		return store:GetAsync(player.UserId .. "_spawn")
+	end)
+
+	if success and value then
+		savedSpawn.Value = value
+	end
+end)
+]]
+			serverScript.Parent = sss
+		end
+
+		print("✅ Spawn system generated with " .. num .. " spawns.")
+	end)
+
+	local backBtn = Instance.new("TextButton")
+	backBtn.Size = UDim2.new(1, -20, 0, 30)
+	backBtn.Text = "← Back to Systems"
+	backBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+	backBtn.TextColor3 = Color3.new(1, 1, 1)
+	backBtn.Font = Enum.Font.SourceSansBold
+	backBtn.TextSize = 16
+	backBtn.Parent = scrollingFrame
+
+	backBtn.MouseButton1Click:Connect(createMainSystemMenu)
+end
+
+
+-- Call it once at startup
+createMainSystemMenu()
+
+scrollingFrame.Parent = widget
+
+button.Click:Connect(function()
+	widget.Enabled = not widget.Enabled
+end)
