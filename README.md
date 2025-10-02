@@ -3,6 +3,19 @@
 GameStarter Pro is a Roblox Studio plugin that speeds up early development with one-click systems. Instead of spending hours wiring up common features, you can generate complete frameworks for dialogue, matchmaking, data storage, spawns, shops, leaderboards, and more — all with simple, readable settings.
 
 
+Here's the Roblox Studio link to GameStarter Pro ;)
+
+https://create.roblox.com/store/asset/78488022506846/
+
+I will be uploading free versions of these tools. As of right now I haven't finished them.
+
+Contact me for bug fixes/new ideas for the plugin here!
+
+https://forms.gle/DFrhgMTtiVhqaYzT7
+
+The purpose for this plugin is to speed up workflow when designing your systems. Some tools aren't beginner friendly and require some knowledge you can gain from ChatGPT or YouTube. Happy Creating!!!
+
+
 ✨ Features
 
 Dialogue system with chapters, steps, and player/NPC responses
