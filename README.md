@@ -16,7 +16,7 @@ https://forms.gle/DFrhgMTtiVhqaYzT7
 The purpose for this plugin is to speed up workflow when designing your systems. Some tools aren't beginner friendly and require some knowledge you can gain from ChatGPT or YouTube. Happy Creating!!!
 
 
-✨ Features
+✨ Summary of Features
 
 Dialogue system with chapters, steps, and player/NPC responses
 
