@@ -13,7 +13,7 @@ Contact me for bug fixes/new ideas for the plugin here!
 
 https://forms.gle/DFrhgMTtiVhqaYzT7
 
-The purpose for this plugin is to speed up workflow when designing your systems. Some tools aren't beginner friendly and require some knowledge you can gain from ChatGPT or YouTube. Happy Creating!!!
+The purpose for this plugin is to speed up workflow when designing your systems. Some tools aren't beginner friendly and require some knowledge for Roblox Studio you can gain from ChatGPT or YouTube. Happy Creating!!!
 
 
 ✨ Summary of Features
